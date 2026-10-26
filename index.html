@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fake News entlarven</title>
+<meta name="description" content="Lektionseinheit (25–40 Min.) für 12- bis 15-Jährige: Fake News an klaren Hinweisen erkennen – mit aktuellen Faktenchecks und Expertenquiz.">
+<style>
+  :root{
+    --bg:#f6f4ef; --card:#ffffff; --ink:#1d2330; --muted:#5b6475;
+    --accent:#d9480f; --accent-soft:#fff0e6; --ok:#2b8a3e; --ok-soft:#e6f6ea;
+    --bad:#c92a2a; --bad-soft:#fdecec; --line:#e2ddd2; --blue:#1c5d99; --blue-soft:#e8f1fa;
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14171f; --card:#1d222d; --ink:#eef0f4; --muted:#a3abbb;
+      --accent:#ff8a4c; --accent-soft:#3a2418; --ok:#69db7c; --ok-soft:#1b3323;
+      --bad:#ff8787; --bad-soft:#3b1d1f; --line:#2f3644; --blue:#74b4ec; --blue-soft:#18293b;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--blue)}
+  .wrap{max-width:920px;margin:0 auto;padding:0 16px 64px}
+  header.hero{padding:48px 0 28px}
+  .kicker{display:inline-block;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:4px 10px;border-radius:99px}
+  h1{font-size:clamp(2rem,6vw,3.2rem);line-height:1.1;margin:.4em 0 .3em}
+  h2{font-size:1.6rem;margin:0 0 .4em;line-height:1.2}
+  h3{font-size:1.15rem;margin:.2em 0 .4em}
+  .lead{font-size:1.15rem;color:var(--muted);max-width:60ch}
+  nav.toc{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 0}
+  nav.toc a{text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:99px;font-size:.92rem}
+  nav.toc a:hover{border-color:var(--accent)}
+  section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin:20px 0}
+  .phase{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+  .badge{font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--blue-soft);color:var(--blue)}
+  .num{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800}
+  details{border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:10px 0;background:var(--bg)}
+  summary{cursor:pointer;font-weight:700}
+  .grid{display:grid;gap:14px}
+  @media(min-width:640px){.grid.two{grid-template-columns:1fr 1fr}}
+  /* Einstieg-Karten */
+  .vote{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--bg)}
+  .vote p{margin:.2em 0 .6em}
+  .vote .btns{display:flex;gap:8px;flex-wrap:wrap}
+  button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px}
+  button:hover{border-color:var(--accent)}
+  .reveal{display:none;margin-top:10px;padding:10px 12px;border-radius:10px;font-size:.95rem}
+  .reveal.show{display:block}
+  .reveal.real{background:var(--ok-soft)}
+  .reveal.fake{background:var(--bad-soft)}
+  /* STOPP */
+  .stopp{display:grid;gap:12px}
+  @media(min-width:700px){.stopp{grid-template-columns:repeat(5,1fr)}}
+  .letter{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--bg)}
+  .letter b.big{display:block;font-size:2.2rem;line-height:1;color:var(--accent)}
+  .letter strong{display:block;margin:.3em 0}
+  .letter p{margin:0;font-size:.92rem;color:var(--muted)}
+  /* Fallkarten */
+  .case{border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:12px;padding:16px;background:var(--bg)}
+  .case .meta{font-size:.82rem;color:var(--muted)}
+  .claim{background:var(--card);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin:8px 0;font-style:italic}
+  ul.tight{margin:.3em 0;padding-left:1.2em}
+  .note{background:var(--blue-soft);border-radius:10px;padding:12px 14px;font-size:.95rem}
+  .warn{background:var(--accent-soft);border-radius:10px;padding:12px 14px;font-size:.95rem}
+  /* Quiz */
+  #quiz .q{font-size:1.1rem;font-weight:700;margin:.3em 0 .8em}
+  #quiz .opts{display:grid;gap:8px}
+  #quiz .opts button{text-align:left;padding:12px 14px}
+  #quiz .opts button.right{background:var(--ok-soft);border-color:var(--ok)}
+  #quiz .opts button.wrong{background:var(--bad-soft);border-color:var(--bad)}
+  #quiz .opts button:disabled{cursor:default}
+  .bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:6px 0 16px}
+  .bar span{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+  .explain{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--bg);display:none}
+  .explain.show{display:block}
+  .qnav{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px;flex-wrap:wrap}
+  .primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+  .result{text-align:center;padding:10px 0}
+  .result .score{font-size:3rem;font-weight:800;color:var(--accent)}
+  .cert{border:3px double var(--accent);border-radius:14px;padding:18px;margin:16px auto;max-width:520px}
+  .cert input{font:inherit;padding:8px;border-radius:8px;border:1px solid var(--line);width:100%;max-width:300px;background:var(--card);color:var(--ink)}
+  footer{color:var(--muted);font-size:.85rem;margin-top:30px}
+  @media print{
+    nav.toc,#quiz .qnav,.vote .btns{display:none}
+    details{display:block}
+    details>*{display:block}
+    section{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <span class="kicker">NaTech · Medien &amp; Informatik · 12–15 Jahre</span>
+  <h1>Fake News entlarven</h1>
+  <p class="lead">Lass dich nicht reinlegen! In dieser Lektion lernst du, an welchen Hinweisen du Falschinformationen erkennst – mit echten Fällen aus den letzten Wochen.</p>
+  <p class="note" style="margin-top:16px"><strong>So arbeitest du:</strong> Bearbeite die Seite allein von oben nach unten (ca. 35 Minuten). Halte dich an die Zeitangaben bei jedem Schritt. Links öffnen sich in einem neuen Tab – komm danach immer hierher zurück.</p>
+  <nav class="toc" aria-label="Inhalt">
+    <a href="#einstieg">1 · Echt oder Fake?</a>
+    <a href="#warum">2 · Warum wir reinfallen</a>
+    <a href="#stopp">3 · Die STOPP-Methode</a>
+    <a href="#faelle">4 · Ermittlungsfälle</a>
+    <a href="#merken">5 · Das nehme ich mit</a>
+    <a href="#quiz">6 · Expertenquiz</a>
+  </nav>
+</header>
+
+
+
+<!-- PHASE 1 -->
+<section id="einstieg">
+  <div class="phase"><span class="num">1</span><h2>Echt oder Fake?</h2><span class="badge">5 Min.</span></div>
+  <p>Vier Meldungen, die in der Schweiz tatsächlich herumgingen. Was glaubst du? Tippe auf <strong>Echt</strong> oder <strong>Fake</strong> – dann siehst du die Auflösung.</p>
+  <div class="grid two">
+    <div class="vote" data-answer="real">
+      <p><strong>🐄 Eine Kuh kratzt sich mit einem Besen selbst am Rücken.</strong></p>
+      <div class="btns"><button onclick="guess(this,'real')">👍 Echt</button><button onclick="guess(this,'fake')">👎 Fake</button></div>
+      <div class="verdict" style="display:none;font-weight:700;margin-top:8px"></div>
+      <div class="reveal real"><strong>ECHT!</strong> Die Braunvieh-Kuh Veronika benutzt tatsächlich einen Besen als Werkzeug – die Forschung hat das untersucht. Merke: <em>Seltsam heisst nicht automatisch fake.</em> <a href="https://www.srf.ch/wissen/natur-tiere/tierintelligenz-clevere-kuh-benutzt-werkzeug-und-ueberrascht-die-forschung" target="_blank" rel="noopener">SRF Wissen</a></div>
+    </div>
+    <div class="vote" data-answer="fake">
+      <p><strong>💉 Video von „SRF Schweiz Aktuell“: Nach Pfingsten startet in der Schweiz eine Hantavirus-Impfung mit Testzentren.</strong></p>
+      <div class="btns"><button onclick="guess(this,'real')">👍 Echt</button><button onclick="guess(this,'fake')">👎 Fake</button></div>
+      <div class="verdict" style="display:none;font-weight:700;margin-top:8px"></div>
+      <div class="reveal fake"><strong>FAKE!</strong> SRF hat diesen Beitrag nie gesendet. Rechtschreibfehler und erfundene Wörter in den Einblendungen verraten die Fälschung. Das SRF-Logo beweist gar nichts. <a href="https://www.20min.ch/story/faktencheck-also-diese-srf-sendung-ist-sicher-nicht-vom-srf-103561705" target="_blank" rel="noopener">20 Minuten Faktencheck</a></div>
+    </div>
+    <div class="vote" data-answer="fake">
+      <p><strong>🐊 Video: Ein riesiges Krokodil schwimmt in Zürich durch die Limmat.</strong></p>
+      <div class="btns"><button onclick="guess(this,'real')">👍 Echt</button><button onclick="guess(this,'fake')">👎 Fake</button></div>
+      <div class="verdict" style="display:none;font-weight:700;margin-top:8px"></div>
+      <div class="reveal fake"><strong>FAKE (KI)!</strong> SRF hat dieses Video absichtlich mit einem KI-Tool erstellt, um zu zeigen, wie leicht das geht: ein Abo für rund 100 Dollar und ein paar Stunden Zeit. <a href="https://www.srf.ch/news/schweiz/ki-videos-erkennen-wenn-das-weisse-haus-brennt-und-krokodile-in-der-limmat-schwimmen" target="_blank" rel="noopener">SRF News</a></div>
+    </div>
+    <div class="vote" data-answer="real">
+      <p><strong>⚡ Ein Bergsteiger hört ein Summen und Knacken – und kurz darauf schlägt direkt neben ihm ein Blitz ein.</strong></p>
+      <div class="btns"><button onclick="guess(this,'real')">👍 Echt</button><button onclick="guess(this,'fake')">👎 Fake</button></div>
+      <div class="verdict" style="display:none;font-weight:700;margin-top:8px"></div>
+      <div class="reveal real"><strong>ECHT!</strong> Das SRF-Netzwerk Faktencheck hat bestätigt: Das kann so passieren (das Summen ist ein Warnzeichen für elektrische Spannung). <a href="https://www.srf.ch/sendungen/hallosrf/srf-faktencheck-was-stimmt-wirklich-das-publikum-fragt-srf-antwortet" target="_blank" rel="noopener">SRF</a></div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:14px"><span id="vote-score"></span><strong>Erkenntnis:</strong> Unser Bauchgefühl liegt oft daneben – in beide Richtungen. Wir brauchen eine <em>Methode</em>, kein Gefühl.</p>
+</section>
+
+<!-- PHASE 2 -->
+<section id="warum">
+  <div class="phase"><span class="num">2</span><h2>Warum fallen wir darauf rein?</h2><span class="badge">4 Min.</span></div>
+  <div class="grid two">
+    <div><h3>😡 Gefühle schlagen Verstand</h3><p>Fake News machen wütend, ängstlich oder begeistert. Wer starke Gefühle hat, teilt schneller und denkt weniger nach.</p></div>
+    <div><h3>⏱️ Sekunden-Entscheid</h3><p>Auf TikTok und Instagram entscheiden wir in wenigen Sekunden, ob etwas glaubwürdig ist. Ein Fake muss nicht perfekt sein – nur auf den ersten Blick gut genug.</p></div>
+    <div><h3>🔁 „Das sagen doch alle“</h3><p>Wenn etwas oft geteilt wird, wirkt es wahr. Häufigkeit ist aber kein Beweis – oft kopieren alle vom gleichen Fake ab.</p></div>
+    <div><h3>🤖 KI macht es billig</h3><p>Videos, Stimmen und Nachrichtensendungen lassen sich heute schnell fälschen. Das Problem ist vor allem die riesige <em>Menge</em> an Fakes.</p></div>
+  </div>
+  <p class="note"><strong>Ganz aktuell:</strong> Am 26.10.2026 hat die Universität Zürich (fög) eine Studie veröffentlicht, wie anfällig die Schweizer Bevölkerung für Desinformation ist. Ergebnis: Wir sind weder schutzlos noch immun – aber viele Menschen fallen auf Falschinformationen herein. <a href="https://www.srf.ch/news/schweiz/fakten-und-fakes-wie-anfaellig-ist-die-schweizer-bevoelkerung-fuer-desinformation" target="_blank" rel="noopener">SRF-Bericht</a></p>
+</section>
+
+<!-- PHASE 3 -->
+<section id="stopp">
+  <div class="phase"><span class="num">3</span><h2>Die STOPP-Methode</h2><span class="badge">5 Min.</span></div>
+  <p>Bevor du etwas glaubst oder teilst: <strong>STOPP</strong>. Fünf Schritte, die auch Profis beim Faktencheck verwenden.</p>
+  <div class="stopp">
+    <div class="letter"><b class="big">S</b><strong>Stopp &amp; Gefühl checken</strong><p>Macht mich das sehr wütend, ängstlich oder aufgeregt? Steht „Teile das, bevor es gelöscht wird!“? → Warnsignal.</p></div>
+    <div class="letter"><b class="big">T</b><strong>Täter:in / Quelle</strong><p>Wer hat das veröffentlicht? Ein bekanntes Medium, eine Behörde – oder ein anonymer Account? Gibt es ein Impressum?</p></div>
+    <div class="letter"><b class="big">O</b><strong>Original &amp; Datum</strong><p>Wann und wo ist das Bild/Video entstanden? Passt es zur Behauptung? Bilder-Rückwärtssuche (Google Lens) hilft.</p></div>
+    <div class="letter"><b class="big">P</b><strong>Prüfen woanders</strong><p>Neuer Tab! Berichten seriöse Medien darüber? Gibt es schon einen Faktencheck? <em>Der wichtigste Schritt.</em></p></div>
+    <div class="letter"><b class="big">P</b><strong>Pixel &amp; Patzer</strong><p>Tippfehler, falsche Logos, verschmolzene Hände, verzerrte Schrift, unmögliche Physik, merkwürdige Internetadressen.</p></div>
+  </div>
+  <details>
+    <summary>Die drei Arten von Fake News</summary>
+    <ul class="tight">
+      <li><strong>Erfunden:</strong> Die Geschichte ist komplett ausgedacht (z. B. gefälschte SRF-Sendung).</li>
+      <li><strong>Falscher Kontext:</strong> Echte Bilder, aber von einem anderen Ort oder Zeitpunkt (z. B. alte Kriegsbilder als „heute“).</li>
+      <li><strong>Manipuliert / KI:</strong> Bild, Video oder Stimme wurde verändert oder ganz künstlich erzeugt.</li>
+    </ul>
+    <p>Sonderfall <strong>Satire:</strong> absichtlich lustig übertrieben und gekennzeichnet. Wird sie ohne Hinweis weitergeteilt, glauben Leute sie plötzlich.</p>
+  </details>
+</section>
+
+<!-- PHASE 4 -->
+<section id="faelle">
+  <div class="phase"><span class="num">4</span><h2>Ermittlungsfälle</h2><span class="badge">12 Min.</span></div>
+  <p><strong>Dein Auftrag:</strong> Bearbeite mindestens <strong>zwei</strong> Fälle (wenn du Zeit hast, alle vier).</p>
+  <ol class="tight">
+    <li>Lies die Behauptung auf der Fallkarte. Öffne die Lösung noch <em>nicht</em>.</li>
+    <li>Welche Hinweise der STOPP-Methode passen? Schreibe mindestens <strong>drei</strong> ins Notizfeld.</li>
+    <li>Öffne jetzt die Lösung und den Faktencheck. Vergleiche: Was hattest du richtig? Was hast du übersehen?</li>
+  </ol>
+
+  <div class="grid">
+    <div class="case">
+      <span class="meta">Fall A · Falscher Kontext · dpa-Faktencheck, 21.10.2026</span>
+      <h3>Die „verharmlosende“ Tagesschau</h3>
+      <div class="claim">Ein Clip auf X und Facebook: Eine „Tagesschau“-Sprecherin spricht über die Proteste in Frankreich ruhig von „Schülerprotesten“ – im Hintergrund sieht man aber brennende Gebäude und schwere Krawalle. Der Vorwurf: Die Nachrichten verschweigen die Wahrheit!</div>
+      <label style="display:block;font-size:.9rem;font-weight:700;margin-top:6px">Meine Hinweise (S-T-O-P-P):</label>
+      <textarea rows="3" placeholder="1. …&#10;2. …&#10;3. …" style="width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)"></textarea>
+      <details>
+        <summary>Lösung &amp; Link (erst öffnen, wenn du 3 Hinweise notiert hast)</summary>
+        <ul class="tight">
+          <li><strong>O – Original &amp; Datum:</strong> Die Sprecherin stammt aus der Sendung vom 10. Oktober. Die Krawall-Bilder entstanden erst rund eine Woche später.</li>
+          <li><strong>P – Prüfen woanders:</strong> Die Tagesschau hat über die späteren Ausschreitungen sehr wohl berichtet – in einer späteren Sendung.</li>
+          <li><strong>Trick:</strong> Fremde Bilder wurden in einen echten Beitrag hineingeschnitten. Alles „echt“ – und trotzdem gelogen.</li>
+        </ul>
+        <p>→ <a href="https://dpa-factchecking.com/germany/261020-99-07209/" target="_blank" rel="noopener">dpa-Faktencheck lesen</a></p>
+      </details>
+    </div>
+
+    <div class="case">
+      <span class="meta">Fall B · Erfunden · Mimikama &amp; 20 Minuten, Mai 2026</span>
+      <h3>Die gefälschte „Schweiz Aktuell“-Sendung</h3>
+      <div class="claim">Ein Kurzvideo im Look von SRF: In der Schweiz würden Hantavirus-Testzentren eingerichtet und nach Pfingsten starte eine Impfung. Unten links prangt das Logo „SRF Schweiz Aktuell“.</div>
+      <label style="display:block;font-size:.9rem;font-weight:700;margin-top:6px">Meine Hinweise (S-T-O-P-P):</label>
+      <textarea rows="3" placeholder="1. …&#10;2. …&#10;3. …" style="width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)"></textarea>
+      <details>
+        <summary>Lösung &amp; Link (erst öffnen, wenn du 3 Hinweise notiert hast)</summary>
+        <ul class="tight">
+          <li><strong>P – Pixel &amp; Patzer:</strong> Rechtschreibfehler und erfundene Wörter in den Einblendungen – das passiert bei einer echten SRF-Sendung nicht.</li>
+          <li><strong>T – Quelle:</strong> Ein Logo kann jeder kopieren. Auf srf.ch und in Play SRF existiert der Beitrag nicht.</li>
+          <li><strong>S – Gefühl:</strong> Das Thema Krankheit/Impfung macht Angst – typisch für Fakes.</li>
+        </ul>
+        <p>→ <a href="https://www.20min.ch/story/faktencheck-also-diese-srf-sendung-ist-sicher-nicht-vom-srf-103561705" target="_blank" rel="noopener">20 Minuten Faktencheck</a> · <a href="https://www.mimikama.org/ist-dieses-srf-hantavirus-video-echt/" target="_blank" rel="noopener">Mimikama</a></p>
+      </details>
+    </div>
+
+    <div class="case">
+      <span class="meta">Fall C · Betrug · SRF „Espresso“, 26.10.2026</span>
+      <h3>Der Super-Deal im Onlineshop</h3>
+      <div class="claim">Eine Werbung auf Instagram: Ein bekanntes Schweizer Möbelhaus verkauft Sofas zu 70 % Rabatt. Die Seite sieht genau aus wie das Original – nur die Adresse lautet <code>getmicasa.shop</code>.</div>
+      <label style="display:block;font-size:.9rem;font-weight:700;margin-top:6px">Meine Hinweise (S-T-O-P-P):</label>
+      <textarea rows="3" placeholder="1. …&#10;2. …&#10;3. …" style="width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)"></textarea>
+      <details>
+        <summary>Lösung &amp; Link (erst öffnen, wenn du 3 Hinweise notiert hast)</summary>
+        <ul class="tight">
+          <li><strong>P – Patzer:</strong> Die Internetadresse ist leicht verändert („get…“, Endung „.shop“) – ein klassischer Fake-Shop-Hinweis.</li>
+          <li><strong>S – Gefühl:</strong> Zu gut, um wahr zu sein? Dann ist es meistens nicht wahr.</li>
+          <li><strong>P – Prüfen woanders:</strong> Die echte Adresse direkt eintippen statt auf Werbung klicken.</li>
+          <li>Betroffen waren laut SRF auch Kopien von Migros, Jura und anderen Schweizer Firmen.</li>
+        </ul>
+        <p>→ <a href="https://www.srf.ch/sendungen/kassensturz-espresso/espresso/betrug-im-onlinehandel-fake-shop-seuche-so-tappen-sie-nicht-in-die-falle" target="_blank" rel="noopener">SRF Espresso lesen</a></p>
+      </details>
+    </div>
+
+    <div class="case">
+      <span class="meta">Fall D · KI-Fälschung · SRF News</span>
+      <h3>Überschwemmung in Basel &amp; Krokodil in der Limmat</h3>
+      <div class="claim">Mehrere kurze „Newsvideos“ aus der Schweiz: ein Krokodil in Zürich, eine Überschwemmung in Basel, eine Demo vor dem Bundeshaus in Bern. Sehen auf den ersten Blick echt aus.</div>
+      <label style="display:block;font-size:.9rem;font-weight:700;margin-top:6px">Meine Hinweise (S-T-O-P-P):</label>
+      <textarea rows="3" placeholder="1. …&#10;2. …&#10;3. …" style="width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)"></textarea>
+      <details>
+        <summary>Lösung &amp; Link (erst öffnen, wenn du 3 Hinweise notiert hast)</summary>
+        <ul class="tight">
+          <li><strong>P – Pixel &amp; Patzer:</strong> Achtet auf Details am Rand: Gebäude, die es so nicht gibt (das „Bundeshaus“!), Gegenstände, die sich verformen, Bewegungen gegen die Physik, verschmolzene Hände, unleserliche Schrift.</li>
+          <li><strong>O – Original:</strong> Wo und wann soll das gefilmt worden sein? Keine unabhängige Quelle zeigt das Ereignis.</li>
+          <li><strong>Tipp von SRF:</strong> Schaut bei der Basel-Szene auf den „Stuhl“ und die „Kirche“.</li>
+        </ul>
+        <p>→ <a href="https://www.srf.ch/news/schweiz/ki-videos-erkennen-wenn-das-weisse-haus-brennt-und-krokodile-in-der-limmat-schwimmen" target="_blank" rel="noopener">SRF: Die Videos anschauen und selbst Fehler suchen</a></p>
+      </details>
+    </div>
+  </div>
+
+  <details>
+    <summary>Bonus, wenn du schneller bist: Finde selbst einen aktuellen Fall</summary>
+    <p>Öffne eine der Faktencheck-Seiten, wähle einen Fall von dieser Woche und notiere mit STOPP, wie er entlarvt wurde.</p>
+    <ul class="tight">
+      <li><a href="https://www.srf.ch/news/srf-faktenchecks" target="_blank" rel="noopener">SRF-Faktenchecks</a> (Schweiz)</li>
+      <li><a href="https://dpa-factchecking.com/" target="_blank" rel="noopener">dpa-Faktencheck</a> (Deutschland, Österreich, Schweiz)</li>
+      <li><a href="https://www.mimikama.org/" target="_blank" rel="noopener">Mimikama</a> (Österreich)</li>
+    </ul>
+  </details>
+</section>
+
+<!-- PHASE 5 -->
+<section id="merken">
+  <div class="phase"><span class="num">5</span><h2>Das nehme ich mit</h2><span class="badge">2 Min.</span></div>
+  <div class="grid two">
+    <div class="note"><strong>Wenn ich unsicher bin …</strong>
+      <ul class="tight">
+        <li>teile ich es <strong>nicht</strong>,</li>
+        <li>öffne ich einen neuen Tab und prüfe,</li>
+        <li>suche ich nach „Name/Thema + Faktencheck“.</li>
+      </ul>
+    </div>
+    <div class="warn"><strong>Wenn ich einen Fake finde …</strong>
+      <ul class="tight">
+        <li>melde ich ihn auf der Plattform,</li>
+        <li>schicke ich im Gruppenchat freundlich den Faktencheck-Link,</li>
+        <li>kann ich ihn bei <a href="https://www.srf.ch/news/srf-faktenchecks/faktencheck-fake-oder-fakt-srf-faktencheck-prueft-ihre-anfragen" target="_blank" rel="noopener">SRF prüfen lassen</a>.</li>
+      </ul>
+    </div>
+  </div>
+  <p style="margin-top:14px"><strong>Merksatz:</strong> <em>Ein Logo, viele Likes und ein gutes Gefühl beweisen gar nichts. Nur eine unabhängige zweite Quelle tut es.</em></p>
+</section>
+
+<!-- PHASE 6 QUIZ -->
+<section id="quiz">
+  <div class="phase"><span class="num">6</span><h2>Expertenquiz: Bist du Fake-Detektiv:in?</h2><span class="badge">8 Min.</span></div>
+  <p id="quiz-intro">12 Fragen. Nach jeder Antwort siehst du die Erklärung. Am Schluss bekommst du deinen Detektiv-Rang.</p>
+  <div id="quiz-box">
+    <div style="display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted)"><span id="q-count"></span><span id="q-score"></span></div>
+    <div class="bar"><span id="q-bar"></span></div>
+    <div class="q" id="q-text"></div>
+    <div class="opts" id="q-opts"></div>
+    <div class="explain" id="q-explain"></div>
+    <div class="qnav"><span></span><button class="primary" id="q-next" style="display:none" onclick="nextQ()">Weiter →</button></div>
+  </div>
+  <div id="quiz-result" class="result" style="display:none"></div>
+</section>
+
+<footer>
+  <p>Quellen der Fallbeispiele: SRF News, SRF „Espresso“, dpa-Faktencheck, Mimikama, 20 Minuten. Alle Inhalte sind eigene Zusammenfassungen; Details siehe verlinkte Originalartikel. Links geprüft am 26.10.2026.</p>
+  <p>Frei verwendbar für den Unterricht.</p>
+</footer>
+</div>
+
+<script>
+let voteRight = 0, voteDone = 0;
+function guess(btn, choice){
+  const card = btn.closest('.vote');
+  card.querySelectorAll('.btns button').forEach(b=>b.disabled=true);
+  const ok = card.dataset.answer === choice;
+  if(ok) voteRight++;
+  voteDone++;
+  const v = card.querySelector('.verdict');
+  v.textContent = ok ? '✅ Gut getippt!' : '❌ Daneben getippt!';
+  v.style.display = 'block';
+  card.querySelector('.reveal').classList.add('show');
+  if(voteDone === 4){
+    document.getElementById('vote-score').innerHTML = `Du hast <strong>${voteRight} von 4</strong> richtig getippt. `;
+  }
+}
+
+const QUESTIONS = [
+  {q:"Ein Video zeigt das Logo von „SRF Schweiz Aktuell“. Beweist das, dass es wirklich von SRF stammt?",
+   o:["Ja, Logos sind geschützt und können nicht kopiert werden.","Nein – Logos lassen sich leicht kopieren. Ich prüfe auf srf.ch, ob es den Beitrag gibt.","Ja, wenn das Video mehr als 10'000 Likes hat."],
+   a:1, e:"Genau das war der Trick beim gefälschten Hantavirus-Video: SRF-Logo drauf, aber nie von SRF gesendet."},
+  {q:"Was ist der wichtigste Schritt, um eine verdächtige Meldung zu prüfen?",
+   o:["Die Kommentare unter dem Post lesen.","Die Seite verlassen und in einem neuen Tab nachsehen, was seriöse Medien oder Faktenchecker sagen.","Den Post genauer und länger anschauen."],
+   a:1, e:"Profis nennen das „laterales Lesen“: Man prüft eine Quelle von aussen statt nur darin herumzulesen. Das ist das zweite P in STOPP."},
+  {q:"Ein echter Tagesschau-Ausschnitt wird mit Krawall-Bildern kombiniert, die eine Woche später entstanden sind. Welche Art Fake ist das?",
+   o:["Satire","Falscher Kontext / Manipulation durch Zusammenschnitt","Kein Fake, denn alle Bilder sind echt"],
+   a:1, e:"Alle Teile sind echt – aber falsch zusammengesetzt. Darum lohnt sich immer die Frage: Wann und wo ist das Bild entstanden? (dpa-Faktencheck, Oktober 2026)"},
+  {q:"Ein Shop bietet Markenmöbel mit 70 % Rabatt an. Die Adresse lautet „getmicasa.shop“. Was ist der klarste Warnhinweis?",
+   o:["Die leicht veränderte Internetadresse mit der Endung .shop","Die schönen Produktfotos","Dass es Möbel sind"],
+   a:0, e:"Fake-Shops kopieren das Aussehen echter Shops, verändern aber die Adresse ein wenig. Echte Adresse lieber selbst eintippen."},
+  {q:"Welche Fehler verraten häufig ein KI-generiertes Video?",
+   o:["Zu gute Bildqualität","Verschmolzene Hände, verzerrte Schrift, Bewegungen gegen die Physik","Dass das Video im Hochformat ist"],
+   a:1, e:"KI-Videos haben oft Fehler in Details: Hände, Schrift, Schatten, Gebäude und Physik. Aber Achtung: Die KI wird besser – darum immer auch woanders prüfen!"},
+  {q:"Ein Post macht dich richtig wütend und darunter steht: „TEILEN, bevor es gelöscht wird!!!“ Was tust du zuerst?",
+   o:["Sofort teilen, damit es alle wissen.","Stopp – starke Gefühle und Zeitdruck sind Warnsignale. Erst prüfen.","Den Post kommentieren und meine Meinung sagen."],
+   a:1, e:"Fake News arbeiten mit Wut, Angst und Zeitdruck. Das S in STOPP heisst: anhalten und das eigene Gefühl checken."},
+  {q:"Ein Video zeigt eine Kuh, die sich mit einem Besen am Rücken kratzt. Total seltsam! Also …",
+   o:["… ist es sicher fake.","… ist es sicher echt.","… sagt „seltsam“ noch nichts. Ich prüfe es."],
+   a:2, e:"Die Kuh Veronika gibt es wirklich. Unglaubliches kann echt sein, Normales kann fake sein. Nur Prüfen hilft."},
+  {q:"Was ist Satire?",
+   o:["Eine absichtlich übertriebene, lustige Darstellung, die als solche gekennzeichnet ist","Eine besonders gefährliche Lüge","Ein Fachwort für KI-Bilder"],
+   a:0, e:"Satire ist erlaubt und gewollt. Problematisch wird es, wenn sie ohne Hinweis weitergeteilt wird – dann glauben manche Leute sie."},
+  {q:"Wozu dient eine Bilder-Rückwärtssuche (z. B. Google Lens)?",
+   o:["Um ein Bild schöner zu machen","Um herauszufinden, wo und wann ein Bild zuerst im Netz auftauchte","Um ein Bild zu löschen"],
+   a:1, e:"So findest du heraus, ob ein angeblich „neues“ Bild in Wahrheit alt ist oder von einem ganz anderen Ort stammt."},
+  {q:"Welche dieser Quellen ist eine Faktencheck-Redaktion?",
+   o:["Die Kommentarspalte unter einem TikTok","SRF-Faktencheck, dpa-Faktencheck oder Mimikama","Ein Account mit vielen Followern"],
+   a:1, e:"Faktencheck-Redaktionen arbeiten nach festen Regeln, legen ihre Quellen offen und korrigieren Fehler öffentlich."},
+  {q:"Hunderte Accounts teilen dieselbe Meldung. Heisst das, sie stimmt?",
+   o:["Ja, so viele Leute können sich nicht irren.","Nein – Häufigkeit ist kein Beweis. Oft kopieren alle vom gleichen Ursprung.","Ja, wenn auch Freunde von mir sie teilen."],
+   a:1, e:"Wiederholung lässt Dinge wahr wirken. Manchmal stecken sogar automatische Bot-Accounts dahinter."},
+  {q:"Ein Post sagt: „Neue Studie beweist: Sonnencreme verursacht Krebs!“ Was prüfst du?",
+   o:["Nichts, denn eine Studie ist immer richtig.","Ob die Studie das wirklich sagt – und was Fachleute und Faktenchecker dazu schreiben.","Ob der Post viele Likes hat."],
+   a:1, e:"Echte Studien werden oft falsch wiedergegeben. Genau das hat der dpa-Faktencheck im Oktober 2026 bei einer Behauptung zu Sonnencreme festgestellt: Die Studie wurde fehlinterpretiert."}
+];
+
+let qi = 0, score = 0;
+function shuffleOpts(item){
+  const idx = item.o.map((_,i)=>i).sort(()=>Math.random()-0.5);
+  return {q:item.q, o:idx.map(i=>item.o[i]), a:idx.indexOf(item.a), e:item.e};
+}
+const QS = QUESTIONS.map(shuffleOpts);
+
+function renderQ(){
+  const item = QS[qi];
+  document.getElementById('q-count').textContent = `Frage ${qi+1} von ${QS.length}`;
+  document.getElementById('q-score').textContent = `Punkte: ${score}`;
+  document.getElementById('q-bar').style.width = (qi/QS.length*100)+'%';
+  document.getElementById('q-text').textContent = item.q;
+  const opts = document.getElementById('q-opts');
+  opts.innerHTML = '';
+  item.o.forEach((t,i)=>{
+    const b = document.createElement('button');
+    b.textContent = t;
+    b.onclick = ()=>answer(i);
+    opts.appendChild(b);
+  });
+  const ex = document.getElementById('q-explain');
+  ex.classList.remove('show'); ex.innerHTML='';
+  document.getElementById('q-next').style.display='none';
+}
+function answer(i){
+  const item = QS[qi];
+  const btns = document.querySelectorAll('#q-opts button');
+  btns.forEach((b,j)=>{
+    b.disabled = true;
+    if(j===item.a) b.classList.add('right');
+    else if(j===i) b.classList.add('wrong');
+  });
+  const ok = i===item.a;
+  if(ok) score++;
+  document.getElementById('q-score').textContent = `Punkte: ${score}`;
+  const ex = document.getElementById('q-explain');
+  ex.innerHTML = `<strong>${ok ? '✅ Richtig!' : '❌ Nicht ganz.'}</strong> ${item.e}`;
+  ex.classList.add('show');
+  const nx = document.getElementById('q-next');
+  nx.textContent = qi===QS.length-1 ? 'Auswertung →' : 'Weiter →';
+  nx.style.display='inline-block';
+}
+function nextQ(){
+  qi++;
+  if(qi<QS.length){ renderQ(); } else { showResult(); }
+}
+function rank(s){
+  if(s===12) return ['🏆 Fake-News-Expert:in','Perfekt! Dich legt so schnell niemand rein.'];
+  if(s>=9)  return ['🕵️ Profi-Detektiv:in','Sehr stark! Du kennst die wichtigsten Tricks.'];
+  if(s>=6)  return ['🦊 Faktenfuchs','Gute Basis! Schau dir die Erklärungen bei den Fehlern nochmals an.'];
+  return ['🔍 Detektiv:in in Ausbildung','Jeder fängt mal an. Wiederhole die STOPP-Methode und versuche es nochmals!'];
+}
+function showResult(){
+  document.getElementById('quiz-box').style.display='none';
+  document.getElementById('quiz-intro').style.display='none';
+  const [title,msg] = rank(score);
+  const r = document.getElementById('quiz-result');
+  const today = new Date().toLocaleDateString('de-CH');
+  r.innerHTML = `
+    <div class="score">${score} / ${QS.length}</div>
+    <div class="cert">
+      <div style="font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Urkunde</div>
+      <h3 style="font-size:1.5rem;margin:.3em 0">${title}</h3>
+      <p><input type="text" placeholder="Dein Name" aria-label="Dein Name"></p>
+      <p>${msg}</p>
+      <p style="font-size:.85rem;color:var(--muted)">Expertenquiz „Fake News entlarven“ · ${today}</p>
+    </div>
+    <button class="primary" onclick="location.reload()">Nochmals spielen</button>`;
+  r.style.display='block';
+}
+renderQ();
+</script>
+</body>
+</html>
